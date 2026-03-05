@@ -23,7 +23,7 @@ class DbConnection(Base):
 
     user = relationship("User", back_populates="db_connections")
     sessions = relationship("ChatSession", back_populates="db_connection", cascade="all, delete-orphan")
-    schemas = relationship("SchemaCache", back_populates="db_connection", cascade="all, delete-orphan")
+    schema = relationship("SchemaCache", back_populates="db_connection", uselist=False, cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="db_connection")
 
 
@@ -31,9 +31,11 @@ class SchemaCache(Base):
     __tablename__ = "schema_cache"
 
     id = Column(Integer, primary_key=True, index=True)
-    db_connection_id = Column(Integer, ForeignKey("db_connection.id", ondelete="CASCADE"), nullable=False)
+    db_connection_id = Column(Integer, ForeignKey("db_connection.id", ondelete="CASCADE"), nullable=False, unique=True)
     schema_snapshot = Column(JSONB)
+    schema_hash = Column(String, nullable=False)
+    version = Column(Integer, default=1)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    db_connection = relationship("DbConnection", back_populates="schemas")
+    db_connection = relationship("DbConnection", back_populates="schema")
