@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = Field(..., env="ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = Field(..., env="ACCESS_TOKEN_EXPIRE_MINUTES")
     ALLOWED_ORIGINS: list[str] = Field(..., env="ALLOWED_ORIGINS")
+    DB_CREDENTIAL_ENCRYPTION_KEY: str = Field(..., env="DB_CREDENTIAL_ENCRYPTION_KEY")
     POSTGRES_USER: str = Field(..., env="POSTGRES_USER")
     POSTGRES_PASSWORD: str = Field(..., env="POSTGRES_PASSWORD")
     POSTGRES_DB: str = Field(..., env="POSTGRES_DB")
