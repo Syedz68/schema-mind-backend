@@ -16,5 +16,5 @@ class AuditLog(Base):
     error_message = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-    users = relationship("User", back_populates="audit_logs")
-    db_connections = relationship("DbConnection", back_populates="audit_logs")
+    user = relationship("User", back_populates="audit_logs")
+    db_connection = relationship("DbConnection", back_populates="audit_logs")

@@ -21,10 +21,10 @@ class DbConnection(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    users = relationship("User", back_populates="db_connections")
-    sessions = relationship("ChatSession", back_populates="db_connections", cascade="all, delete-orphan")
-    schemas = relationship("SchemaCache", back_populates="db_connections", cascade="all, delete-orphan")
-    audit_logs = relationship("AuditLog", back_populates="db_connections")
+    user = relationship("User", back_populates="db_connections")
+    sessions = relationship("ChatSession", back_populates="db_connection", cascade="all, delete-orphan")
+    schemas = relationship("SchemaCache", back_populates="db_connection", cascade="all, delete-orphan")
+    audit_logs = relationship("AuditLog", back_populates="db_connection")
 
 
 class SchemaCache(Base):
@@ -36,4 +36,4 @@ class SchemaCache(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    db_connections = relationship("DbConnection", back_populates="schemas")
+    db_connection = relationship("DbConnection", back_populates="schemas")

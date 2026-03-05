@@ -15,9 +15,9 @@ class ChatSession(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
-    users = relationship("User", back_populates="sessions")
-    db_connections = relationship("DbConnection", back_populates="sessions")
-    messages = relationship("ChatMessage", back_populates="sessions", cascade="all, delete-orphan")
+    user = relationship("User", back_populates="sessions")
+    db_connection = relationship("DbConnection", back_populates="sessions")
+    messages = relationship("ChatMessage", back_populates="session", cascade="all, delete-orphan")
 
 
 class ChatMessage(Base):
@@ -32,4 +32,4 @@ class ChatMessage(Base):
     success = Column(Boolean)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
 
-    sessions = relationship("ChatSession", back_populates="messages")
+    session = relationship("ChatSession", back_populates="messages")

@@ -18,6 +18,6 @@ class User(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     last_login = Column(DateTime(timezone=True), nullable=True)
 
-    db_connections = relationship("DbConnection", back_populates="users", cascade="all, delete-orphan")
-    sessions = relationship("ChatSession", back_populates="users", cascade="all, delete-orphan")
-    audit_logs = relationship("AuditLog", back_populates="users")
+    db_connections = relationship("DbConnection", back_populates="user", cascade="all, delete-orphan")
+    sessions = relationship("ChatSession", back_populates="user", cascade="all, delete-orphan")
+    audit_logs = relationship("AuditLog", back_populates="user")
