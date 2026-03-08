@@ -7,11 +7,11 @@ class DbConnectionCreate(BaseModel):
     user_id: int
     name: Optional[str] = None
     db_type: DataBaseType
-    host: str
-    port: int
+    host: Optional[str] = None
+    port: Optional[int] = None
     database_name: str
-    db_username: str
-    password: str
+    db_username: Optional[str] = None
+    password: Optional[str] = None
 
 
 class DbConnectionUpdate(BaseModel):
@@ -25,8 +25,19 @@ class DbConnectionUpdate(BaseModel):
     password: Optional[str] = None
 
 
+class DbConnectEngineRequest(BaseModel):
+    conn_id: Optional[int] = None
+    db_type: DataBaseType
+    host: Optional[str] = None
+    port: Optional[int] = None
+    database_name: str
+    db_username: Optional[str] = None
+    encrypted_password: Optional[str] = None
+
+
 class DbConnectionResponse(BaseModel):
     id: int
+    user_id: int
     name: str
     db_type: DataBaseType
     host: str
