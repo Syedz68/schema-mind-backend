@@ -1,3 +1,4 @@
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import Column, Integer, String, Text, DateTime, Enum, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -11,7 +12,7 @@ class ChatSession(Base):
     user_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     db_connection_id = Column(Integer, ForeignKey("db_connection.id", ondelete="CASCADE"), nullable=False)
     llm_mode = Column(Enum(LlmMode, native_enum=False), nullable=False)
-    title = Column(String, nullable=False)
+    title = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
 
@@ -28,6 +29,7 @@ class ChatMessage(Base):
     role = Column(Enum(ChatRole, native_enum=False), nullable=False)
     content = Column(Text)
     generated_sql = Column(Text)
+    query_result = Column(JSONB)
     execution_time = Column(Float)
     success = Column(Boolean)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
