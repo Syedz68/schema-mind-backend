@@ -40,7 +40,7 @@ def verify_access_token(token: str):
                 detail="Invalid token type"
             )
 
-        if not all(key in payload for key in ["user_id", "user_name", "role"]):
+        if not all(key in payload for key in ["sub", "user_name", "role"]):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token payload"
