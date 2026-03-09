@@ -11,9 +11,9 @@ class ChatRepository:
 
     # SESSION OPERATIONS
 
-    def create_session(self, request: SessionCreate):
+    def create_session(self, user_id: int, request: SessionCreate):
         new_session = ChatSession(
-            user_id=request.user_id,
+            user_id=user_id,
             db_connection_id=request.db_connection_id,
             llm_mode=request.llm_mode,
             title=request.title or "New Chat"
@@ -74,16 +74,20 @@ class ChatRepository:
 
     def create_message(
             self,
-            request: MessageCreate,
+            session_id: int,
+            role: ChatRole,
+            content: str,
             generated_sql: str | None = None,
+            query_result: dict | None = None,
             execution_time: float | None = None,
             success: bool | None = None
     ):
         new_message = ChatMessage(
-            session_id=request.session_id,
-            role=request.role,
-            content=request.content,
+            session_id=session_id,
+            role=role,
+            content=content,
             generated_sql=generated_sql,
+            query_result=query_result,
             execution_time=execution_time,
             success=success
         )
