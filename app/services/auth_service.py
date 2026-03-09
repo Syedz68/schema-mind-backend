@@ -32,7 +32,8 @@ class AuthService:
         data = {
             "user_id": user.id,
             "user_name": user.full_name,
-            "role": user.user_role.value
+            "role": user.user_role.value,
+            "permission": user.user_permission.value
         }
         token = create_access_token(data)
         return token
@@ -42,7 +43,8 @@ class AuthService:
         data = {
             "user_id": user.id,
             "user_name": user.full_name,
-            "role": user.user_role.value
+            "role": user.user_role.value,
+            "permission": user.user_permission.value
         }
         token = create_access_token(data)
         return token

@@ -14,6 +14,7 @@ def create_access_token(data: dict):
         "sub": str(data["user_id"]),
         "user_name": data["user_name"],
         "role": data["role"],
+        "permission": data["permission"],
         "token_type": "access",
         "iat": int(now.timestamp()),
         "exp": access_expiration
@@ -40,7 +41,7 @@ def verify_access_token(token: str):
                 detail="Invalid token type"
             )
 
-        if not all(key in payload for key in ["sub", "user_name", "role"]):
+        if not all(key in payload for key in ["sub", "user_name", "role", "permission"]):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid token payload"
