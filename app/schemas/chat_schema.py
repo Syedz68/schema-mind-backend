@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 from pydantic import BaseModel, ConfigDict
 from app.utils.enums import LlmMode, ChatRole
 from datetime import datetime
@@ -27,8 +27,7 @@ class SessionResponseList(BaseModel):
 
 class MessageCreate(BaseModel):
     session_id: int
-    content: Optional[str] = None
-    role: ChatRole
+    user_question: str
 
 
 class MessageResponse(BaseModel):
@@ -37,6 +36,7 @@ class MessageResponse(BaseModel):
     role: ChatRole
     content: Optional[str] = None
     generated_sql: Optional[str] = None
+    query_result: Optional[Dict] = None
     execution_time: Optional[float] = None
     success: Optional[bool] = None
     created_at: datetime
