@@ -22,7 +22,7 @@ class DataBaseType(str, enum.Enum):
 
 class ChatRole(str, enum.Enum):
     user = "user"
-    system = "system"
+    assistant = "assistant"
 
 
 class LlmMode(str, enum.Enum):
