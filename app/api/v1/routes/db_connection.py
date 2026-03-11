@@ -10,7 +10,7 @@ from app.api.v1.dependencies import role_required
 
 router = APIRouter(prefix="/db-connect", tags=["DB Connection"])
 
-@router.get("/connections", response_model=BaseResponse[DbConnectionListResponse])
+@router.get("/connection", response_model=BaseResponse[DbConnectionListResponse])
 def get_all_connections(
     user_id: int,
     db: Session = Depends(get_db),
@@ -24,7 +24,7 @@ def get_all_connections(
         data=db_list
     )
 
-@router.post("/add-db", response_model=BaseResponse[DbConnectionResponse])
+@router.post("/connection", response_model=BaseResponse[DbConnectionResponse])
 def add_new_db_connection(
     request: DbConnectionCreate,
     db: Session = Depends(get_db),
@@ -38,7 +38,7 @@ def add_new_db_connection(
         data=new_connection
     )
 
-@router.patch("/update-db-credentials", response_model=BaseResponse[DbConnectionResponse])
+@router.patch("/connection", response_model=BaseResponse[DbConnectionResponse])
 def update_db_connection_credential(
     request: DbConnectionUpdate,
     db: Session = Depends(get_db),
@@ -52,7 +52,7 @@ def update_db_connection_credential(
         data=updated_connection
     )
 
-@router.delete("/{connection_id}", response_model=BaseResponse[EmptyData])
+@router.delete("/connection/{connection_id}", response_model=BaseResponse[EmptyData])
 def delete_connection(
     connection_id: int,
     db: Session = Depends(get_db),
@@ -67,7 +67,7 @@ def delete_connection(
         data=None
     )
 
-@router.post("/refresh-schema", response_model=BaseResponse[EmptyData])
+@router.post("/connection/refresh-schema", response_model=BaseResponse[EmptyData])
 def refresh_db_schema(
     request: DbConnectEngineRequest,
     db: Session = Depends(get_db),
