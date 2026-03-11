@@ -27,3 +27,11 @@ Query result:
 
 Explain the result clearly to the user.
 """
+
+def build_chat_title_prompt(question: str):
+    return f"""
+User asked:
+{question}
+
+Based on this first question, generate a suitable title for the chat.
+"""

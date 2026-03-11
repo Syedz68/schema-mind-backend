@@ -33,3 +33,16 @@ class OllamaClient(BaseLLM):
         )
 
         return response.json()["response"]
+
+    def generate_title(self, prompt: str) -> str:
+
+        response = requests.post(
+            self.url,
+            json={
+                "model": self.model,
+                "prompt": prompt,
+                "stream": False
+            }
+        )
+
+        return response.json()["response"]
