@@ -19,7 +19,6 @@ class Settings(BaseSettings):
     POSTGRES_DB: str = Field(..., env="POSTGRES_DB")
     POSTGRES_HOST: str = Field(..., env="POSTGRES_HOST")
     POSTGRES_PORT: int = Field(..., env="POSTGRES_PORT")
-    DEFAULT_LLM_MODE: str = Field(..., env="DEFAULT_LLM_MODE")
     GEMINI_API_KEY: str = Field(..., env="GEMINI_API_KEY")
     GEMINI_MODEL: str = Field(..., env="GEMINI_MODEL")
     OLLAMA_BASE_URL: str = Field(..., env="OLLAMA_BASE_URL")
