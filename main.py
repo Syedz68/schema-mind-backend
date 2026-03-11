@@ -14,6 +14,7 @@ from fastapi.exceptions import RequestValidationError
 from sqlalchemy.exc import SQLAlchemyError
 from app.api.v1.routes.auth import router as auth_router
 from app.api.v1.routes.db_connection import router as connection_router
+from app.api.v1.routes.chat import router as chat_router
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -32,6 +33,7 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(connection_router)
+app.include_router(chat_router)
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(StarletteHTTPException, starlette_exception_handler)
