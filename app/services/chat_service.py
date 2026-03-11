@@ -1,12 +1,16 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import text
 from app.db.engine_creator import get_engine
 from app.core.query_guard import validate_query_permission
 from app.llm.llm_factory import LLMFactory
-from app.llm.prompt_builder import build_sql_prompt, build_answer_prompt
+from app.llm.prompt_builder import build_sql_prompt, build_answer_prompt, build_chat_title_prompt
 from app.repositories.chat_repository import ChatRepository
 from app.schemas.chat_schema import *
 from app.schemas.db_connection_schema import DbConnectEngineRequest
 from app.utils.enums import Permission
+from app.utils.sql_cleaner import clean_sql_response
+from datetime import datetime, date
+from decimal import Decimal
 import time
 
 
@@ -19,7 +23,7 @@ class ChatService:
 
         return SessionResponse(
             id=chat.id,
-            db_connection_id=chat.db_connection,
+            db_connection_id=chat.db_connection_id,
             llm_mode=chat.llm_mode,
             title=chat.title
         )
@@ -30,7 +34,7 @@ class ChatService:
         chat_list = [
             SessionResponse(
                 id=chat.id,
-                db_connection_id=chat.db_connection,
+                db_connection_id=chat.db_connection_id,
                 llm_mode=chat.llm_mode,
                 title=chat.title
             )
@@ -44,7 +48,7 @@ class ChatService:
 
         return SessionResponse(
             id=chat.id,
-            db_connection_id=chat.db_connection,
+            db_connection_id=chat.db_connection_id,
             llm_mode=chat.llm_mode,
             title=chat.title
         )
@@ -54,9 +58,29 @@ class ChatService:
 
         return SessionResponse(
             id=chat.id,
-            db_connection_id=chat.db_connection,
+            db_connection_id=chat.db_connection_id,
             llm_mode=chat.llm_mode,
             title=chat.title
+        )
+
+    def update_chat_title(self, request: MessageCreate):
+        chat_session = self.repo.get_session_by_id(request.session_id)
+        llm = LLMFactory.get_llm(chat_session.llm_mode)
+        chat_title_prompt = build_chat_title_prompt(request.user_question)
+        chat_title = llm.generate_title(chat_title_prompt)
+
+        chat_update_payload = SessionUpdate(
+            session_id=request.session_id,
+            title=chat_title
+        )
+
+        updated_chat = self.repo.update_session(chat_update_payload)
+
+        return SessionResponse(
+            id=updated_chat.id,
+            db_connection_id=updated_chat.db_connection_id,
+            llm_mode=updated_chat.llm_mode,
+            title=updated_chat.title
         )
 
     def delete_chat(self, session_id: int):
@@ -85,6 +109,14 @@ class ChatService:
 
         return MessageListResponse(messages=message_list)
 
+    def serialize_row(self, row: dict) -> dict:
+        return {
+            key: value.isoformat() if isinstance(value, (datetime, date))
+            else float(value) if isinstance(value, Decimal)
+            else value
+            for key, value in row.items()
+        }
+
     def send_message(self, request: MessageCreate, permission: Permission):
         self.repo.create_message(session_id=request.session_id, role=ChatRole.user, content=request.user_question)
 
@@ -106,7 +138,9 @@ class ChatService:
 
         generated_sql = llm.generate_sql(sql_prompt)
 
-        validate_query_permission(generated_sql, permission)
+        clean_sql = clean_sql_response(generated_sql)
+
+        validate_query_permission(clean_sql, permission)
 
         engine_payload = DbConnectEngineRequest(
             db_type=db_conn.db_type,
@@ -122,8 +156,9 @@ class ChatService:
         start_time = time.time()
 
         with engine.connect() as conn:
-            result = conn.execute(generated_sql)
-            rows = [dict(row) for row in result]
+            result = conn.execute(text(clean_sql))
+            rows = result.mappings().all()
+            rows = [self.serialize_row(dict(row)) for row in rows]
 
         execution_time = time.time() - start_time
 
@@ -131,14 +166,25 @@ class ChatService:
 
         answer = llm.generate_answer(answer_prompt)
 
-        self.repo.create_message(
+
+        message_response = self.repo.create_message(
             session_id=request.session_id,
             role=ChatRole.assistant,
             content=answer,
-            generated_sql=generated_sql,
-            query_result=result,
+            generated_sql=clean_sql,
+            query_result={"rows": rows},
             execution_time=execution_time,
             success=True
         )
 
-        return answer
+        return MessageResponse(
+            id=message_response.id,
+            session_id=message_response.session_id,
+            role=message_response.role,
+            content=message_response.content,
+            generated_sql=message_response.generated_sql,
+            query_result=message_response.query_result,
+            execution_time=message_response.execution_time,
+            success=message_response.success,
+            created_at=message_response.created_at
+        )

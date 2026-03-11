@@ -26,7 +26,7 @@ class ChatMessage(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(Integer, ForeignKey("chat_session.id", ondelete="CASCADE"), nullable=False)
-    role = Column(Enum(ChatRole, native_enum=False), nullable=False)
+    role = Column(Enum(ChatRole, native_enum=False, length=20), nullable=False)
     content = Column(Text)
     generated_sql = Column(Text)
     query_result = Column(JSONB)
