@@ -1,4 +1,5 @@
 import sqlparse
+from sqlparse.tokens import DML
 
 
 def get_sql_operation(query: str):
@@ -10,9 +11,7 @@ def get_sql_operation(query: str):
     statement = parsed[0]
 
     for token in statement.tokens:
-        if token.ttype is None:
-            value = token.value.upper().strip()
-            if value.split(" ")[0]:
-                return value.split(" ")[0]
+        if token.ttype == DML:
+            return token.value.upper()
 
     return None
